@@ -3,12 +3,12 @@ services:
     build: ./
     container_name: teknofest-local-server
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     environment:
       # SQLite (varsayılan, tek servis). Postgres'e geçmek için db servisini açın ve
       # DATABASE_URL=postgresql+psycopg://teknofest:teknofest@db:5432/teknofest yapın.
       - DATABASE_URL=sqlite:////app/data/app.db
-      - PUBLIC_URL=http://localhost:8000/
+      - PUBLIC_URL=https://saerotech.bartualperen.com/
       - MEDIA_ROOT=/app/data/media
       - AUTO_SEED=true
       - RATE_LIMIT_ENABLED=false
