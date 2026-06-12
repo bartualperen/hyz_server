@@ -1,20 +1,14 @@
 import logging
 from contextlib import asynccontextmanager
 
+from .routers import auth, classes, dashboard, frames, media, prediction, session, translation
 from fastapi import FastAPI
 
 from .config import settings
 from .database import init_db
 from .middleware import RequestLogMiddleware
 from .routers import (
-    auth,
-    classes,
-    dashboard,
-    frames,
-    media,
-    prediction,
-    session,
-    translation,
+    manage,
 )
 from .seed import run_seed
 
@@ -50,3 +44,4 @@ app.include_router(media.router)
 
 # Yönetim paneli
 app.include_router(dashboard.router)
+app.include_router(manage.router)

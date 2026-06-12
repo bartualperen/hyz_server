@@ -87,16 +87,36 @@ Kritik detaylar:
 | `RATE_LIMIT_ENABLED` | `false` | yarışma kısıtları (5/dk, 80/dk) |
 | `DEFAULT_TEAM_NAME` / `DEFAULT_TEAM_PASSWORD` | `test_team` / `test` | varsayılan client |
 
-## Kendi dataset'inizi kullanma (v1)
+## Yönetim paneli (Aşama 2)
 
-`MEDIA_ROOT` altında bir klasöre görselleri koyun (ör. `data/media/set_01/...`) ve harici
-diskler için `docker-compose.yml`'deki volume satırını açın. Otomatik kayıt şu an `sample_set`
-içindir; gerçek setleri kaydetmek için `app/services/datasets.register_dataset(...)` kullanılır
-(panelden CRUD bir sonraki aşamada eklenecek — bkz. yol haritası).
+Panelden CRUD:
+
+- **Datasets** (`/manage/datasets`): bir klasör yolu verip **Tara ve Ekle**. Klasör (ve `images/`
+  alt klasörü) taranır; varsa `translations.json` otomatik okunur. Dataset arşivle/aktifleştir/sil.
+- **Sessions** (`/manage/sessions`): dataset seçip yeni oturum; durum (running/completed/failed); sil.
+- **Clients** (`/manage/clients`): takım+şifre ile client; satırdan **aktif session ata**; sil.
+
+`translations.json` formatı — frame sırasına paralel **liste** veya **dosya-adı→kayıt sözlüğü**:
+
+```json
+[{"translation_x": 1.5, "translation_y": 2.5, "translation_z": 3.5, "health_status": "1"}]
+```
+
+Harici diskteki setler için `docker-compose.yml`'deki volume satırını açıp (ör. `D:/teknofest-datasets`
+→ `/datasets`) panelde yol olarak konteyner içindeki yolu (`/datasets/set_01`) verin.
+
+Silme işlemleri **FK cascade** ile zincirleme çalışır (dataset → session → prediction); SQLite'ta
+`PRAGMA foreign_keys=ON` her bağlantıda etkinleştirilir.
+
+### Yönetim akışı testi
+
+```bash
+python scripts/manage_test.py --url http://127.0.0.1:8000/ --dataset-path <mutlak-dataset-yolu>
+```
 
 ## Yol haritası
 
-- **Aşama 1 (bu sürüm):** protokol uyumlu sunucu + seed + loglama + minimal panel. ✅
-- **Aşama 2:** panelden dataset tarama/kayıt, session & client CRUD, aktif session atama.
+- **Aşama 1:** protokol uyumlu sunucu + seed + loglama + minimal panel. ✅
+- **Aşama 2:** panelden dataset tarama/kayıt, session & client CRUD, aktif session atama. ✅
 - **Aşama 3:** filtreli log/prediction ekranları, client/model karşılaştırma.
 - **Aşama 4:** bbox overlay, skor hesabı (mAP / RMSE), CSV/JSON export.

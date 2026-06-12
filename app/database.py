@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
 from .config import settings
@@ -24,6 +24,16 @@ def _make_engine():
 
 
 engine = _make_engine()
+
+if settings.database_url.startswith("sqlite"):
+    # SQLite varsayılan olarak FK kısıtlarını uygulamaz; ondelete CASCADE/SET NULL'ın
+    # (dataset->session->prediction silme zinciri vb.) çalışması için her bağlantıda açıyoruz.
+    @event.listens_for(engine, "connect")
+    def _set_sqlite_fk_pragma(dbapi_connection, _record):
+        cursor = dbapi_connection.cursor()
+        cursor.execute("PRAGMA foreign_keys=ON")
+        cursor.close()
+
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False, class_=Session)
 
 

@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Clientlar{% endblock %}
+{% block content %}
+<h2>Yeni Client Oluştur</h2>
+<div class="panel">
+  <form method="post" action="/manage/clients/create">
+    <div class="row">
+      <div>
+        <label>Takım adı (istemci .env → TEAM_NAME)</label>
+        <input type="text" name="team_name" placeholder="yolov8x_sahi" required />
+      </div>
+      <div>
+        <label>Şifre (PASSWORD)</label>
+        <input type="password" name="password" placeholder="..." required />
+      </div>
+      <div>
+        <label>Aktif session (opsiyonel)</label>
+        <select name="active_session_id">
+          <option value="">— yok (en yeni running'e düşer) —</option>
+          {% for s in sessions %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}
+        </select>
+      </div>
+    </div>
+    <p style="margin:12px 0 0"><button type="submit">Oluştur</button></p>
+  </form>
+</div>
+
+<h2>Clientlar</h2>
+<table>
+  <tr><th>Takım</th><th>Aktif Session</th><th>Tahmin</th><th>Son Görülme</th><th>Aktif Session Ata</th><th></th></tr>
+  {% for c in clients %}
+  <tr>
+    <td>{{ c.team_name }}</td>
+    <td>{{ c.active_session.name if c.active_session else '—' }}</td>
+    <td>{{ counts.get(c.id, 0) }}</td>
+    <td class="muted">{{ c.last_seen_at.strftime('%Y-%m-%d %H:%M:%S') if c.last_seen_at else '—' }}</td>
+    <td>
+      <form class="inline" method="post" action="/manage/clients/{{ c.id }}/assign">
+        <select name="active_session_id" onchange="this.form.submit()">
+          <option value="" {{ 'selected' if not c.active_session_id }}>— yok —</option>
+          {% for s in sessions %}
+          <option value="{{ s.id }}" {{ 'selected' if c.active_session_id == s.id }}>{{ s.name }}</option>
+          {% endfor %}
+        </select>
+      </form>
+    </td>
+    <td style="white-space:nowrap">
+      <form class="inline" method="post" action="/manage/clients/{{ c.id }}/delete"
+            onsubmit="return confirm('Client silinecek. Emin misiniz?');">
+        <button class="danger sm" type="submit">Sil</button>
+      </form>
+    </td>
+  </tr>
+  {% else %}<tr><td colspan="6" class="muted">Henüz client yok.</td></tr>{% endfor %}
+</table>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Sessionlar{% endblock %}
+{% block content %}
+<h2>Yeni Session Oluştur</h2>
+<div class="panel">
+  <form method="post" action="/manage/sessions/create">
+    <div class="row">
+      <div>
+        <label>Session adı (SESSION_NAME ile eşleşebilir)</label>
+        <input type="text" name="name" placeholder="yolov8x_set01_run01" required />
+      </div>
+      <div>
+        <label>Dataset</label>
+        <select name="dataset_id" required>
+          <option value="" disabled selected>— dataset seç —</option>
+          {% for d in datasets %}<option value="{{ d.id }}">{{ d.slug }} ({{ d.frames|length }} kare)</option>{% endfor %}
+        </select>
+      </div>
+    </div>
+    <p style="margin:12px 0 0"><button type="submit">Oluştur</button></p>
+  </form>
+  {% if not datasets %}<p class="alert bad">Önce bir dataset eklemelisiniz.</p>{% endif %}
+</div>
+
+<h2>Sessionlar</h2>
+<table>
+  <tr><th>Ad</th><th>Dataset</th><th>Durum</th><th>Tahmin</th><th>Oluşturma</th><th>İşlem</th></tr>
+  {% for s in sessions %}
+  <tr>
+    <td>{{ s.name }}</td>
+    <td>{{ s.dataset.slug if s.dataset else '-' }}</td>
+    <td><span class="pill {{ 'ok' if s.status == 'running' else ('warn' if s.status == 'completed' else 'err') }}">{{ s.status }}</span></td>
+    <td>{{ counts.get(s.id, 0) }}</td>
+    <td class="muted">{{ s.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+    <td style="white-space:nowrap">
+      <form class="inline" method="post" action="/manage/sessions/{{ s.id }}/status">
+        <select name="status" onchange="this.form.submit()">
+          <option value="running" {{ 'selected' if s.status == 'running' }}>running</option>
+          <option value="completed" {{ 'selected' if s.status == 'completed' }}>completed</option>
+          <option value="failed" {{ 'selected' if s.status == 'failed' }}>failed</option>
+        </select>
+      </form>
+      <form class="inline" method="post" action="/manage/sessions/{{ s.id }}/delete"
+            onsubmit="return confirm('Session ve tahminleri silinecek. Emin misiniz?');">
+        <button class="danger sm" type="submit">Sil</button>
+      </form>
+    </td>
+  </tr>
+  {% else %}<tr><td colspan="6" class="muted">Henüz session yok.</td></tr>{% endfor %}
+</table>
+<p class="muted" style="font-size:12px">
+  Not: Bir client'ın aktif session'ı atanmamışsa, sunucu en yeni <b>running</b> session'a düşer.
+</p>
+{% endblock %}

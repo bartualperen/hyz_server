@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Datasetler{% endblock %}
+{% block content %}
+<h2>Yeni Dataset Ekle</h2>
+<div class="panel">
+  <form method="post" action="/manage/datasets/create">
+    <label>Klasör yolu (görsellerin / images alt klasörünün bulunduğu dizin)</label>
+    <input type="text" name="path" placeholder="{{ media_root }}/set_01  ya da  D:/teknofest-datasets/set_01" required />
+    <div class="row">
+      <div>
+        <label>Ad (boşsa klasör adı)</label>
+        <input type="text" name="name" placeholder="Set 01" />
+      </div>
+      <div>
+        <label>Slug (boşsa addan üretilir)</label>
+        <input type="text" name="slug" placeholder="set_01" />
+      </div>
+    </div>
+    <label>Açıklama</label>
+    <input type="text" name="description" placeholder="(opsiyonel)" />
+    <p style="margin:12px 0 0"><button type="submit">Tara ve Ekle</button></p>
+  </form>
+  <p class="muted" style="margin-top:10px; font-size:12px">
+    Klasör taranır; <code>translations.json</code> (liste veya dosya-adı→kayıt) varsa otomatik okunur.
+    image_url <code>/&lt;slug&gt;/...</code> olarak üretilir ve <code>/media/&lt;slug&gt;/...</code> ile servis edilir.
+  </p>
+</div>
+
+<h2>Datasetler</h2>
+<table>
+  <tr><th>Slug</th><th>Ad</th><th>Frame</th><th>Durum</th><th>Yol</th><th>İşlem</th></tr>
+  {% for d in datasets %}
+  <tr>
+    <td>{{ d.slug }}</td>
+    <td>{{ d.name }}</td>
+    <td>{{ d.frames|length }}</td>
+    <td><span class="pill {{ 'ok' if d.status == 'active' else 'warn' }}">{{ d.status }}</span></td>
+    <td class="muted">{{ d.media_root }}</td>
+    <td style="white-space:nowrap">
+      {% if d.status == 'active' %}
+      <form class="inline" method="post" action="/manage/datasets/{{ d.id }}/status">
+        <input type="hidden" name="status" value="archived" />
+        <button class="ghost sm" type="submit">Arşivle</button>
+      </form>
+      {% else %}
+      <form class="inline" method="post" action="/manage/datasets/{{ d.id }}/status">
+        <input type="hidden" name="status" value="active" />
+        <button class="ghost sm" type="submit">Aktifleştir</button>
+      </form>
+      {% endif %}
+      <form class="inline" method="post" action="/manage/datasets/{{ d.id }}/delete"
+            onsubmit="return confirm('Dataset ve bağlı tüm session/tahminler silinecek. Emin misiniz?');">
+        <button class="danger sm" type="submit">Sil</button>
+      </form>
+    </td>
+  </tr>
+  {% else %}<tr><td colspan="6" class="muted">Henüz dataset yok.</td></tr>{% endfor %}
+</table>
+{% endblock %}
