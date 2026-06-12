@@ -16,6 +16,7 @@ services:
       - DEFAULT_TEAM_PASSWORD=test
     volumes:
       - ./data:/app/data
+      - /mnt/hdd/SaerotechAI/DataSets:/datasets:ro
       # Harici diskteki gerçek datasetlerinizi buraya bağlayın; panelden bu yolu kaydedin.
       # - D:/teknofest-datasets:/datasets:ro
 
