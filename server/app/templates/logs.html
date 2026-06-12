@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}İstek Logları{% endblock %}
+{% block content %}
+<h2>İstek Logları (son 200)</h2>
+<table>
+  <tr><th>Zaman</th><th>IP</th><th>Takım</th><th>Method</th><th>Path</th><th>Kod</th><th>ms</th><th>İstek</th></tr>
+  {% for l in logs %}
+  <tr>
+    <td class="muted">{{ l.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+    <td class="muted">{{ l.ip_address or '-' }}</td>
+    <td>{{ l.team_name or '-' }}</td>
+    <td>{{ l.method }}</td>
+    <td>{{ l.path }}</td>
+    <td><span class="pill {{ 'ok' if l.status_code < 400 else ('warn' if l.status_code in (406, 409, 429) else 'err') }}">{{ l.status_code }}</span></td>
+    <td class="muted">{{ '%.0f'|format(l.latency_ms) }}</td>
+    <td class="muted" style="max-width:320px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">{{ l.request_body or '' }}</td>
+  </tr>
+  {% else %}<tr><td colspan="8" class="muted">Henüz log yok.</td></tr>{% endfor %}
+</table>
+{% endblock %}

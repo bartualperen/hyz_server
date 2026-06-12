@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}TEKNOFEST Local Server{% endblock %}</title>
+  <style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+           background: #0f1420; color: #e6e9ef; }
+    header { background: #16203a; padding: 14px 22px; display: flex; align-items: center;
+             gap: 22px; border-bottom: 1px solid #243155; }
+    header h1 { font-size: 16px; margin: 0; color: #7fd1ff; }
+    header a { color: #cdd5e3; text-decoration: none; font-size: 14px; }
+    header a:hover { color: #fff; }
+    main { padding: 22px; max-width: 1200px; margin: 0 auto; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; }
+    .card { background: #16203a; border: 1px solid #243155; border-radius: 10px; padding: 16px; }
+    .card .num { font-size: 28px; font-weight: 700; color: #7fd1ff; }
+    .card .lbl { font-size: 12px; color: #9aa6bd; text-transform: uppercase; letter-spacing: .04em; }
+    h2 { font-size: 15px; margin: 26px 0 10px; color: #b9c4da; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid #20294552; }
+    th { color: #8a97b0; font-weight: 600; }
+    tr:hover td { background: #1a2440; }
+    a.link { color: #7fd1ff; text-decoration: none; }
+    .pill { padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+    .ok { background: #123b22; color: #57d98a; }
+    .warn { background: #3b2f12; color: #e0b24a; }
+    .err { background: #3b1518; color: #f0727c; }
+    .muted { color: #79839a; }
+    pre { background: #0b0f1a; border: 1px solid #243155; border-radius: 8px; padding: 12px;
+          overflow: auto; font-size: 12px; }
+    img.frame { max-width: 100%; border: 1px solid #243155; border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>TEKNOFEST · Local Evaluation Server</h1>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/dashboard/logs">İstek Logları</a>
+    <a href="/docs">API Docs</a>
+  </header>
+  <main>{% block content %}{% endblock %}</main>
+</body>
+</html>

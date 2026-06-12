@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="cards">
+  <div class="card"><div class="num">{{ stats.datasets }}</div><div class="lbl">Dataset</div></div>
+  <div class="card"><div class="num">{{ stats.sessions }}</div><div class="lbl">Session</div></div>
+  <div class="card"><div class="num">{{ stats.clients }}</div><div class="lbl">Client</div></div>
+  <div class="card"><div class="num">{{ stats.frames }}</div><div class="lbl">Frame</div></div>
+  <div class="card"><div class="num">{{ stats.predictions }}</div><div class="lbl">Prediction</div></div>
+  <div class="card"><div class="num">{{ stats.requests }}</div><div class="lbl">İstek (log)</div></div>
+</div>
+
+<h2>Datasetler</h2>
+<table>
+  <tr><th>Slug</th><th>Ad</th><th>Frame</th><th>Durum</th><th>Yol</th></tr>
+  {% for d in datasets %}
+  <tr><td>{{ d.slug }}</td><td>{{ d.name }}</td><td>{{ d.frames|length }}</td>
+      <td><span class="pill ok">{{ d.status }}</span></td>
+      <td class="muted">{{ d.media_root }}</td></tr>
+  {% else %}<tr><td colspan="5" class="muted">Henüz dataset yok.</td></tr>{% endfor %}
+</table>
+
+<h2>Sessionlar</h2>
+<table>
+  <tr><th>Ad</th><th>Dataset</th><th>Durum</th><th>Oluşturma</th></tr>
+  {% for s in sessions %}
+  <tr><td>{{ s.name }}</td><td>{{ s.dataset.slug if s.dataset else '-' }}</td>
+      <td><span class="pill {{ 'ok' if s.status == 'running' else 'warn' }}">{{ s.status }}</span></td>
+      <td class="muted">{{ s.created_at.strftime('%Y-%m-%d %H:%M') }}</td></tr>
+  {% else %}<tr><td colspan="4" class="muted">Henüz session yok.</td></tr>{% endfor %}
+</table>
+
+<h2>Clientlar</h2>
+<table>
+  <tr><th>Takım</th><th>Aktif Session</th><th>Son Görülme</th></tr>
+  {% for c in clients %}
+  <tr><td>{{ c.team_name }}</td>
+      <td>{{ c.active_session.name if c.active_session else '-' }}</td>
+      <td class="muted">{{ c.last_seen_at.strftime('%Y-%m-%d %H:%M:%S') if c.last_seen_at else '—' }}</td></tr>
+  {% else %}<tr><td colspan="3" class="muted">Henüz client yok.</td></tr>{% endfor %}
+</table>
+
+<h2>Son Tahminler</h2>
+<table>
+  <tr><th>ID</th><th>Frame</th><th>Nesne</th><th>Translation</th><th>Zaman</th></tr>
+  {% for p in recent_predictions %}
+  <tr>
+    <td><a class="link" href="/dashboard/predictions/{{ p.id }}">#{{ p.id }}</a></td>
+    <td>{{ p.frame_id if p.frame_id is not none else p.frame_url }}</td>
+    <td>{{ p.detected_objects|length }}</td>
+    <td>{{ p.detected_translations|length }}</td>
+    <td class="muted">{{ p.created_at.strftime('%H:%M:%S') }}</td>
+  </tr>
+  {% else %}<tr><td colspan="5" class="muted">Henüz tahmin gelmedi.</td></tr>{% endfor %}
+</table>
+
+<h2>Son İstekler</h2>
+<table>
+  <tr><th>Zaman</th><th>Takım</th><th>Method</th><th>Path</th><th>Kod</th><th>ms</th></tr>
+  {% for l in recent_logs %}
+  <tr>
+    <td class="muted">{{ l.created_at.strftime('%H:%M:%S') }}</td>
+    <td>{{ l.team_name or '-' }}</td>
+    <td>{{ l.method }}</td>
+    <td>{{ l.path }}</td>
+    <td><span class="pill {{ 'ok' if l.status_code < 400 else ('warn' if l.status_code in (406, 409, 429) else 'err') }}">{{ l.status_code }}</span></td>
+    <td class="muted">{{ '%.0f'|format(l.latency_ms) }}</td>
+  </tr>
+  {% else %}<tr><td colspan="6" class="muted">Henüz istek yok.</td></tr>{% endfor %}
+</table>
+{% endblock %}

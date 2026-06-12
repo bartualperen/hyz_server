@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(python --version)",
+      "PowerShell(py --version)",
+      "PowerShell(cd d:\\\\repos\\\\hyz_server\\\\server; $env:AUTO_SEED=\"true\"; .\\\\.venv\\\\Scripts\\\\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000)",
+      "PowerShell(cd d:\\\\repos\\\\hyz_server\\\\server; .\\\\.venv\\\\Scripts\\\\python.exe scripts\\\\smoke_test.py --url http://127.0.0.1:8000/ --team test_team --password test; Write-Output \"EXIT=$LASTEXITCODE\")",
+      "PowerShell(cd d:\\\\repos\\\\hyz_server\\\\server; Write-Output \"=== 1. CALISMA ===\"; .\\\\.venv\\\\Scripts\\\\python.exe scripts\\\\smoke_test.py --url http://127.0.0.1:8000/; Write-Output \"EXIT_1=$LASTEXITCODE\"; Write-Output \"\"; Write-Output \"=== 2. CALISMA \\(re-run\\) ===\"; .\\\\.venv\\\\Scripts\\\\python.exe scripts\\\\smoke_test.py --url http://127.0.0.1:8000/; Write-Output \"EXIT_2=$LASTEXITCODE\")",
+      "PowerShell($d = Invoke-WebRequest -Uri http://127.0.0.1:8000/dashboard -UseBasicParsing; Write-Output \"dashboard HTTP $\\($d.StatusCode\\), $\\($d.RawContentLength\\) bayt\"; if \\($d.Content -match 'Son Tahminler'\\) { Write-Output \"dashboard: 'Son Tahminler' bolumu var\" }; $l = Invoke-WebRequest -Uri http://127.0.0.1:8000/dashboard/logs -UseBasicParsing; Write-Output \"logs HTTP $\\($l.StatusCode\\)\"; $p = Invoke-WebRequest -Uri http://127.0.0.1:8000/dashboard/predictions/1 -UseBasicParsing; Write-Output \"prediction detay HTTP $\\($p.StatusCode\\)\"; $api = Invoke-WebRequest -Uri http://127.0.0.1:8000/openapi.json -UseBasicParsing; Write-Output \"openapi HTTP $\\($api.StatusCode\\)\")"
+    ]
+  }
+}

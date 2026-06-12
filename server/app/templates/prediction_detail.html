@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Prediction #{{ prediction.id }}{% endblock %}
+{% block content %}
+<p><a class="link" href="/dashboard">← Dashboard</a></p>
+<h2>Prediction #{{ prediction.id }}</h2>
+<table style="max-width:560px">
+  <tr><th>Session</th><td>{{ prediction.session_id }}</td></tr>
+  <tr><th>Client</th><td>{{ prediction.client_id }}</td></tr>
+  <tr><th>Frame</th><td>{{ prediction.frame_id }} ({{ prediction.frame_url }})</td></tr>
+  <tr><th>Zaman</th><td>{{ prediction.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td></tr>
+</table>
+
+<div style="display:flex; gap:24px; flex-wrap:wrap; margin-top:16px">
+  <div style="flex:1 1 380px; min-width:320px">
+    <h2>Frame Görseli</h2>
+    {% if media_src %}<img class="frame" src="{{ media_src }}" alt="frame" />
+    {% else %}<p class="muted">Görsel bulunamadı (frame eşleşmedi).</p>{% endif %}
+  </div>
+  <div style="flex:1 1 380px; min-width:320px">
+    <h2>Tespit Edilen Nesneler</h2>
+    <table>
+      <tr><th>cls</th><th>landing</th><th>tlx</th><th>tly</th><th>brx</th><th>bry</th></tr>
+      {% for o in prediction.detected_objects %}
+      <tr><td>{{ o.cls_name or o.cls_api_id }}</td><td>{{ o.landing_status }}</td>
+          <td>{{ o.top_left_x }}</td><td>{{ o.top_left_y }}</td>
+          <td>{{ o.bottom_right_x }}</td><td>{{ o.bottom_right_y }}</td></tr>
+      {% else %}<tr><td colspan="6" class="muted">Nesne yok.</td></tr>{% endfor %}
+    </table>
+
+    <h2>Translation</h2>
+    <table>
+      <tr><th>x</th><th>y</th><th>z</th></tr>
+      {% for t in prediction.detected_translations %}
+      <tr><td>{{ t.translation_x }}</td><td>{{ t.translation_y }}</td><td>{{ t.translation_z }}</td></tr>
+      {% else %}<tr><td colspan="3" class="muted">Translation yok.</td></tr>{% endfor %}
+    </table>
+  </div>
+</div>
+
+<h2>Ham Payload</h2>
+<pre>{{ prediction.raw_payload }}</pre>
+{% endblock %}
